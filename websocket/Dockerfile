@@ -6,6 +6,5 @@ RUN apk update && apk upgrade
 RUN apk add ca-certificates git
 
 EXPOSE 3000
-EXPOSE 3005
 
 CMD ["tail","-f","/dev/null"]

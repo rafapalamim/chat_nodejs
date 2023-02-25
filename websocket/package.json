@@ -13,6 +13,6 @@
     "nodemon": "^2.0.20"
   },
   "scripts": {
-    "server": "nodemon ./server/app.js"
+    "server": "nodemon ./src/server.js"
   }
 }
