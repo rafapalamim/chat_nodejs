@@ -1,14 +1,36 @@
 version: '3'
 
-services:
-  
-  chat:
-    container_name: chat_node
+networks:
+  app:
+
+services:  
+
+  server:
+    tty: true
+    container_name: server_chat
     user: 1000:1000
     build:
       context: .
-      dockerfile: ./websocket/Dockerfile
+      dockerfile: ./_docker/Dockerfile.server.dev
     volumes:
-      - "./websocket/:/var/www/chat"
+      - "./server/:/var/www/server"
     ports:
       - "3000:3000"
+    networks:
+      - app
+
+  front:
+    tty: true
+    container_name: front_chat
+    user: 1000:1000
+    build:
+      context: .
+      dockerfile: ./_docker/Dockerfile.front.dev
+    volumes:
+      - "./front/:/var/www/app"
+    ports:
+      - "80:80"
+    networks:
+      - app
+
+  

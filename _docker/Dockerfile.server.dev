@@ -1,0 +1,10 @@
+FROM node:18.14.2-alpine3.17
+
+WORKDIR /var/www/server
+
+RUN apk update && apk upgrade
+RUN apk add ca-certificates git
+
+EXPOSE 3000
+
+CMD ["yarn","run","server"]
