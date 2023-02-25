@@ -1,9 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import SignIn from './App'
+import Login from './pages/Login'
+import { AppProvider } from './contexts/App'
+import LoginAtendimento from './pages/LoginAtendimento'
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <SignIn />
-  </React.StrictMode>,
+    <React.StrictMode>
+        <AppProvider>
+            <Login />
+            {/* <LoginAtendimento /> */}
+        </AppProvider>
+    </React.StrictMode>,
 )
