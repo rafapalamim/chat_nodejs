@@ -4,12 +4,11 @@ import AlertBar from '../wrappers/AlertBar';
 
 const theme = createTheme({
     palette: {
-        mode: 'dark',
         background: {
-            default: '#092e48'
+            // default: '#092e48'
         },
         text: {
-            primary: "#ffffff"
+            // primary: "#ffffff"
         }
     }
 });
