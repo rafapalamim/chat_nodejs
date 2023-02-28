@@ -9,10 +9,24 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotesIcon from '@mui/icons-material/Notes';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../contexts/App';
 
 export default function Chat() {
 
     const atendente = true;
+    const appCtx = React.useContext(AppContext);
+    const token = appCtx.getToken();
+    const navigate = useNavigate();
+
+    /** Dispara ao carregar a página */
+    React.useEffect(() => {
+        if (!token) {
+            appCtx.showAlert('error', 'Autentique-se novamente!');
+            navigate('/');
+        }
+    }, []);
+
 
     return (
         <Container sx={{ mt: 3 }}>
@@ -105,8 +119,8 @@ export default function Chat() {
                         </Grid>
                     }
                     <Grid item xs={9}>
-                        <Box sx={{mb: 2}}>
-                            <Typography variant="button" component="p">Você está conversando com <b>João</b> (Identificação: 12345)</Typography>
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="button" component="p">Você está conversando com <b>{token.name}</b> (Identificação: {token.identifiedBy})</Typography>
                         </Box>
 
                         <Paper sx={{ py: 2, mb: 2, height: '60vh', overflow: "hidden", overflowY: "scroll" }}>

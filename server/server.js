@@ -1,6 +1,7 @@
 /** Iniciando estrutura do serviço */
 require('dotenv-safe').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
@@ -11,6 +12,7 @@ const io = new Server(server);
 require('./src/database.js')();
 
 /** Setando as rotas */
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.set('trust proxy', true)
