@@ -1,0 +1,170 @@
+{
+    "info": {
+        "name": "Chat",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "Login",
+            "item": [
+                {
+                    "name": "Login - Atendente",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/login/atendente",
+                            "path": [
+                                "login",
+                                "atendente"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"user\": \"rafaelp\",\n  \"password\": \"crf1234\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Atendentes",
+            "item": [
+                {
+                    "name": "Create",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/users/atendente",
+                            "path": [
+                                "users",
+                                "atendente"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"name\": \"Rafael Palamim\",\n  \"user\": \"rafaelp\",\n  \"password\": \"crf1234\",\n  \"status\": true\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Conversa",
+            "item": [
+                {
+                    "name": "Init",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/chat/iniciar",
+                            "path": [
+                                "chat",
+                                "iniciar"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"name\": \"Rafael Palamim\",\n  \"identifiedBy\": \"10333681\",\n  \"sendEmail\": true,\n  \"email\": \"rafapalamim@gmail.com\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Dados",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/chat/dados",
+                            "path": [
+                                "chat",
+                                "dados"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGF0SWQiOiI2M2ZkYjdmYWFiNjEyNmIwZGJkODNkODIiLCJ1c2VySWQiOiI2M2ZkYjdmYWFiNjEyNmIwZGJkODNkODMiLCJuYW1lIjoiUmFmYWVsIFBhbGFtaW0iLCJpYXQiOjE2Nzc1NzIwOTAsImV4cCI6MTY3NzU3NTY5MH0.21PfuK0hjh82HIOrEd3ooHhHfEpZs93WW6j2DCyN59E",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Save Message",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/chat/enviar-mensagem",
+                            "path": [
+                                "chat",
+                                "enviar-mensagem"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"message\": \"Uma com horário\"\n}"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGF0SWQiOiI2M2ZkYjdmYWFiNjEyNmIwZGJkODNkODIiLCJ1c2VySWQiOiI2M2ZkYjdmYWFiNjEyNmIwZGJkODNkODMiLCJuYW1lIjoiUmFmYWVsIFBhbGFtaW0iLCJpYXQiOjE2Nzc1NzIwOTAsImV4cCI6MTY3NzU3NTY5MH0.21PfuK0hjh82HIOrEd3ooHhHfEpZs93WW6j2DCyN59E",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

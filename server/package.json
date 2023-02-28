@@ -4,8 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv-safe": "^8.2.0",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0",
     "pm2": "^5.2.2",
     "socket.io": "^4.6.1"
   },
@@ -13,6 +17,6 @@
     "nodemon": "^2.0.20"
   },
   "scripts": {
-    "server": "nodemon ./src/server.js"
+    "server": "nodemon ./server.js"
   }
 }
