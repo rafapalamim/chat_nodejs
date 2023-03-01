@@ -69,20 +69,23 @@ class AtendentesController {
             const tokenJwt = await createJWT({
                 id: user._id.valueOf(),
                 name: user.name,
-                status: user.status
+                status: user.status,
+                atendente: true
             });
 
             return res.status(200).json({
                 auth: true,
+                message: null,
                 token: tokenJwt,
-                message: null
+                name: user.name
             });
 
         } catch (error) {
             return res.status(400).json({
                 auth: false,
+                message: error.message,
                 token: null,
-                message: error.message
+                name: null
             });
         }
 

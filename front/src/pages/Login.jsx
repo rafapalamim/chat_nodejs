@@ -53,7 +53,8 @@ export default function Login() {
                     isAuth: true,
                     token: response.data.token,
                     name: response.data.name,
-                    identifiedBy: response.data.identifiedBy
+                    identifiedBy: response.data.identifiedBy,
+                    atendimento: false
                 });
 
                 appCtx.showAlert('success', 'Login efetuado com sucesso!');

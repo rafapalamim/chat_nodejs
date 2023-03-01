@@ -7,24 +7,44 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { AppContext } from '../contexts/App';
 import { Chip } from '@mui/material';
+import http from '../wrappers/HttpClient';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginAtendimento() {
 
   const appCtx = React.useContext(AppContext);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const makeLogin = (event) => {
     event.preventDefault();
 
-    appCtx.showAlert('info', 'Teste');
+    // appCtx.showAlert('info', 'Teste');
 
     const data = new FormData(event.currentTarget);
 
     const dataForm = {
-      usuario: data.get('usuario'),
-      senha: data.get('senha')
+      user: data.get('usuario'),
+      password: data.get('senha')
     };
 
-    console.log(dataForm);
+    http
+      .post('/login/atendente', dataForm)
+      .then((response) => {
+
+        appCtx.saveAuth({
+          isAuth: true,
+          token: response.data.token,
+          name: response.data.name,
+          atendimento: true
+        });
+
+        appCtx.showAlert('success', 'Login efetuado com sucesso!');
+        navigate('/chat');
+
+      })
+      .catch((err) => {
+        appCtx.showAlert('error', 'Erro na autenticação!');
+      });
 
   };
 
@@ -42,8 +62,8 @@ export default function LoginAtendimento() {
         <Typography component="h1" variant="h4" sx={{ fontWeight: 'bolder' }}>
           CHAT
         </Typography>
-        <Chip label="Área restrita" variant="filled"  sx={{ fontWeight: 'bolder', my: 2 }} />
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Chip label="Área restrita" variant="filled" sx={{ fontWeight: 'bolder', my: 2 }} />
+        <Box component="form" onSubmit={makeLogin} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required

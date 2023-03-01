@@ -4,7 +4,9 @@ const ChatController = require('./controllers/ChatController');
 const { validateJWT } = require('./helpers/jwt.js');
 
 const allowedRoutesAuthorization = [
-    '/chat/iniciar'
+    '/chat/iniciar',
+    '/login/atendente',
+    '/users/atendente'
 ];
 
 /* Separar middlewares em outro arquivo */
@@ -39,14 +41,15 @@ router.use(async (req, res, next) => {
 
 /* External routes */
 router.post('/chat/iniciar', ChatController.init);
-router.get('/chat/dados', ChatController.find);
-router.post('/chat/enviar-mensagem', ChatController.saveMessage);
+router.post('/login/atendente', AtendentesController.logIn);
+// router.get('/chat/dados', ChatController.find);
+// router.post('/chat/enviar-mensagem', ChatController.saveMessage);
 // router.get('/chat/conversa/:chatId', ChatController.findChatById);
 // router.get('/chat/usuario/:userId', ChatController.findChatById);
 
 
 /* Internal routes */
-router.post('/login/atendente', AtendentesController.logIn);
+
 router.post('/users/atendente', AtendentesController.create);
 
 module.exports = router;
