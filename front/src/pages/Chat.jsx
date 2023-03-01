@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotesIcon from '@mui/icons-material/Notes';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../contexts/App';
+import { io } from "socket.io-client";
 
 export default function Chat() {
 
@@ -18,6 +19,9 @@ export default function Chat() {
     const appCtx = React.useContext(AppContext);
     const token = appCtx.getToken();
     const navigate = useNavigate();
+    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+        query: token
+    });
 
     /** Dispara ao carregar a página */
     React.useEffect(() => {
@@ -26,6 +30,28 @@ export default function Chat() {
             navigate('/');
         }
     }, []);
+
+    const handleChangeRoom = (e) => {
+        console.log('ChangeRoom: ', e.currentTarget);
+    };
+
+    const handleTransferChat = (e) => {
+        console.log('TransferChat: ', e.currentTarget);
+    }
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        const formSubmited = e.currentTarget;
+        const input = formSubmited.querySelector('textarea');
+        const message = input.value;
+        socket.emit('message', message);
+        // console.log('SendMessage: ', message);
+        input.value = '';
+    }
+
+    socket.on('message', (msg) => {
+        console.log(msg);
+    });
 
 
     return (
@@ -55,7 +81,7 @@ export default function Chat() {
                                 <AccordionDetails>
                                     <Typography variant='caption' component="p" sx={{ textAlign: 'center', my: 1 }}>Para transferir, clique no atendente</Typography>
                                     <List>
-                                        <ListItem disablePadding>
+                                        <ListItem disablePadding onClick={handleTransferChat}>
                                             <ListItemButton>
                                                 <ListItemIcon>
                                                     <SupportAgentIcon />
@@ -89,7 +115,7 @@ export default function Chat() {
                                         <ChatBubbleIcon sx={{ mr: 1 }} /> Em atendimento
                                     </ListSubheader>
                                 }>
-                                    <ListItem disablePadding>
+                                    <ListItem disablePadding onClick={handleChangeRoom}>
                                         <ListItemButton>
                                             <ListItemIcon>
                                                 <PersonIcon />
@@ -143,7 +169,7 @@ export default function Chat() {
                                 </Box>
                             </Box>
                         </Paper>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', gap: 2 }}>
                             <TextField
                                 id="standard-textarea"
                                 placeholder="Digite aqui sua mensagem..."
@@ -151,7 +177,7 @@ export default function Chat() {
                                 maxRows={2}
                                 fullWidth
                             />
-                            <Button variant="contained" color='success' title='Enviar mensagem'><SendIcon /></Button>
+                            <Button type="submit" variant="contained" color='success' title='Enviar mensagem'><SendIcon /></Button>
                         </Box>
                     </Grid>
                 </Grid>
