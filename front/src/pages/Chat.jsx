@@ -13,16 +13,26 @@ import { AppContext } from '../contexts/App';
 import { SocketContext } from '../contexts/Socket';
 import AccordionArea from './parts/AccordionArea';
 import ListArea from './parts/ListArea';
+import { blueGrey, grey } from '@mui/material/colors';
+
 
 export default function Chat() {
 
+    console.log('Renderizando componente...');
     const [atendente, setAtendente] = React.useState(null);
     const [listAtendentes, setListaAtendentes] = React.useState([]);
+    const [listClientes, setListaClientes] = React.useState([]);
+
+    const [listUsuarios, setUsuarios] = React.useState({
+        clientes: [],
+        atendentes: []
+    })
 
     const appCtx = React.useContext(AppContext);
     const { socket, token } = React.useContext(SocketContext);
     const navigate = useNavigate();
     /** Dispara ao carregar a página */
+
     React.useEffect(() => {
         if (!token) {
             appCtx.showAlert('error', 'Autentique-se novamente!');
@@ -30,15 +40,16 @@ export default function Chat() {
         }
     }, []);
 
-
     const handleJoinChat = (e) => {
-        console.log('JoinChat: ', e.currentTarget);
+        console.log('JoinChat: ', e.currentTarget.getAttribute('data-id'));
+        const chatId = e.currentTarget.getAttribute('data-id');
+        socket.emit('chat:join', chatId);
     };
 
     const handlePasteMessage = (e) => {
         console.log('PasteMessage: ', e.currentTarget);
     };
-    
+
     const handleChangeChat = (e) => {
         console.log('ChangeRoom: ', e.currentTarget);
     };
@@ -58,22 +69,26 @@ export default function Chat() {
         input.value = '';
     }
 
-    // console.log(atendente);
     if (atendente === null) {
-        // console.log('buscando perfil...');
-        socket.emit('buscar perfil');
-        socket.on('retorno perfil', ({ atendente }) => {
+        console.log('Consultando perfil...');
+        socket.emit('perfil:busca');
+        socket.on('perfil:retorno', ({ atendente }) => {
             setAtendente(atendente);
         });
-        socket.on('atendente entrou', (msg) => {
-            console.log(msg);
-            setListaAtendentes(msg);
+    }
+    
+    if (atendente !== null) {
+        console.log('Liberando escutas do socket...');
+
+        socket.on('lista:usuarios', (msg) => {
+            console.log('Recebendo lista de usuários e atendentes...')
+            setUsuarios(msg);
+        });
+
+        socket.on('message', (msg) => {
+            console.log(msg)
         });
     }
-
-    socket.on('message', (msg) => {
-        console.log(msg)
-    });
 
     return (
         <Container sx={{ mt: 3 }}>
@@ -93,31 +108,21 @@ export default function Chat() {
                                     icon={<SupportAgentIcon sx={{ mr: 1 }} />}
                                     insideMessage="Para transferir, clique no atendente"
                                     style={{
-                                        bgcolor: "primary.main",
+                                        bgcolor: grey[900],
                                         color: "#ffffff"
                                     }}
-                                    listRows={listAtendentes}
+                                    listRows={listUsuarios.atendentes}
                                     handlerEvent={handleTransferChat}
                                 />
-                                <AccordionArea
-                                    title="Mensagens prontas"
-                                    icon={<NotesIcon sx={{ mr: 1 }} />}
-                                    insideMessage="Clique em uma mensagem para colar o texto na caixa de mensagem"
-                                    style={{
-                                        bgcolor: "secondary.main",
-                                        color: "#ffffff"
-                                    }}
-                                    listRows=""
-                                    handlerEvent={handlePasteMessage}
-                                    
-                                />
+                                <Divider sx={{ my: 3 }} />
                                 <ListArea
                                     titleIcon={<ChatBubbleIcon sx={{ mr: 1 }} />}
                                     titleText="Em atendimento"
                                     listIcon={<PersonIcon />}
                                     listText="João"
-                                    listRows=""
+                                    listRows={listUsuarios.clientes}
                                     handlerEvent={handleChangeChat}
+                                    keyPrefix="on_"
                                 />
                                 <Divider sx={{ my: 2 }} />
                                 <ListArea
@@ -125,8 +130,9 @@ export default function Chat() {
                                     titleText="Fila de espera"
                                     listIcon={<PersonIcon />}
                                     listText="Renata"
-                                    listRows=""
+                                    listRows={listUsuarios.clientes}
                                     handlerEvent={handleJoinChat}
+                                    keyPrefix="wait_"
                                 />
                             </Grid>
                     }
@@ -165,6 +171,19 @@ export default function Chat() {
                             />
                             <Button type="submit" variant="contained" color='success' title='Enviar mensagem'><SendIcon /></Button>
                         </Box>
+                        <AccordionArea
+                            title="Mensagens prontas"
+                            icon={<NotesIcon sx={{ mr: 1 }} />}
+                            insideMessage="Clique em uma mensagem para colar no campo de texto"
+                            style={{
+                                bgcolor: blueGrey[900],
+                                color: "#ffffff",
+                                mt: 4
+                            }}
+                            listRows={[]}
+                            handlerEvent={handlePasteMessage}
+
+                        />
                     </Grid>
                 </Grid>
             </Box>
