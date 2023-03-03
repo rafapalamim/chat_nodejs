@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema({
     id: messageId,
     message: String,
     sendedBy: String,
+    senderName: String,
     sendedAt: {
         type: Date,
         default: Date.now
