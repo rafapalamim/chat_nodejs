@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { Container, Divider, Typography } from '@mui/material';
+import { Container, Divider } from '@mui/material';
 
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import PersonIcon from '@mui/icons-material/Person';
@@ -31,14 +31,13 @@ export default function Chat() {
         atendentes: []
     });
 
-    const chatSchema = {
+    const [currentChat, setCurrentChat] = React.useState({
         userName: null,
         identifiedBy: null,
         chatId: null,
         messages: [],
         startAt: null
-    }
-    const [currentChat, setCurrentChat] = React.useState(chatSchema);
+    });
 
     const appCtx = React.useContext(AppContext);
     const { socket, token } = React.useContext(SocketContext);
@@ -52,6 +51,7 @@ export default function Chat() {
         }
     }, []);
 
+    /** Atendente aceitando o chat */
     const handleJoinChat = (e) => {
         const chatId = e.currentTarget.getAttribute('data-id');
         console.log('JoinChat: ', chatId);
@@ -59,6 +59,7 @@ export default function Chat() {
         socket.emit('chat:enter', chatId);
     };
 
+    /** Mudar chat atual */
     const handleChangeChat = (e) => {
         const chatId = e.currentTarget.getAttribute('data-id')
         console.log('ChangeRoom: ', chatId);
@@ -73,10 +74,12 @@ export default function Chat() {
         socket.emit('chat:enter', chatId);
     };
 
+    /** Copiar e colar mensagens prontas */
     const handlePasteMessage = (e) => {
         console.log('PasteMessage: ', e.currentTarget);
     };
 
+    /** Transferir chat para outro atendende */
     const handleTransferChat = (e) => {
         console.log('TransferChat: ', e.currentTarget.getAttribute('data-id'));
     }
@@ -87,11 +90,11 @@ export default function Chat() {
         const input = document.querySelector('textarea');
         const message = input.value;
 
-        if(!message){
+        if (!message) {
             input.focus();
             return;
         }
-        
+
         console.log('SendMessage: ', message);
 
         const messageData = {
@@ -104,6 +107,7 @@ export default function Chat() {
         input.focus();
     }
 
+    /** Executar assim que carregar a tela de chat (enquanto 'perfil.atendente' for null) */
     if (perfil.atendente === null) {
         console.log('Consultando perfil...');
         socket.emit('perfil:busca');

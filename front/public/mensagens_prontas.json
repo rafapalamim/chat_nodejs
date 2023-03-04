@@ -1,0 +1,21 @@
+{
+    "mensagens": [
+        {
+            "bloco": "Boas-vindas",
+            "lista": [
+                "Tudo bem?",
+                "Você por aqui?",
+                "Quer tomar um café?",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sed ex lectus. Phasellus fermentum massa ac vehicula consequat. Aliquam tortor nunc, venenatis ut posuere vel, scelerisque quis est. Ut tortor ipsum, molestie a erat eu, interdum finibus urna. Vestibulum nec eros imperdiet, ultrices lectus nec, sagittis erat. Nunc ut mollis diam. Cras eleifend dolor nec purus condimentum tristique. In pharetra, metus non fringilla blandit, urna erat ullamcorper sem, a mattis enim lorem non velit. Proin mollis consequat auctor.\n\n\nOrci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc faucibus eu arcu ac pretium. Praesent in massa tempus, mattis magna a, sagittis dolor. Nullam commodo at sem ac suscipit. Donec scelerisque augue sit amet odio tristique, ac vehicula tellus semper. Aliquam pulvinar mattis dolor, accumsan porttitor enim pellentesque sit amet."
+            ]
+        },
+        {
+            "bloco": "Despedida",
+            "lista": [
+                "Tchau!",
+                "Volte mais vezes!",
+                "Responda nossa pesquisa de satisfação! <LINK>"
+            ]
+        }
+    ]
+}

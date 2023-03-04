@@ -1,12 +1,13 @@
-import { Box, Chip, Paper, TextField, Typography, Button, CircularProgress, LinearProgress } from "@mui/material";
-import { blueGrey, grey } from '@mui/material/colors';
+import { Box, Chip, Paper, TextField, Typography, Button, CircularProgress } from "@mui/material";
+import { blueGrey, green, grey } from '@mui/material/colors';
 import NotesIcon from '@mui/icons-material/Notes';
 import SendIcon from '@mui/icons-material/Send';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import PersonIcon from '@mui/icons-material/Person';
 
-import AccordionArea from "./AccordionArea";
 import { useEffect } from "react";
+import AccordionMensagensProntas from "./AccordionMensagensProntas";
+import json from "./../../../public/mensagens_prontas.json";
 
 const defineIcon = (message, props) => {
     var icon = <PersonIcon color="#fff" />;
@@ -42,9 +43,9 @@ export default function ChatArea(props) {
         return (
             <Box key={message._id} sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mr: 8 }}>
-                    <Box bgcolor="secondary.main" color="#ffffff" sx={{ borderRadius: 2, p: 1 }}>
-                        <Chip sx={{ color: "#fff", my: 1 }} icon={icon} label={message.senderName} />
-                        <Typography sx={{whiteSpace: 'pre'}}>{message.message}</Typography>
+                    <Box bgcolor={grey[300]} color="#1a1c1a;" sx={{ borderRadius: 2, p: 1 }}>
+                        <Chip sx={{ color: "#1a1c1a", my: 1 }} icon={icon} label={message.senderName} />
+                        <Typography sx={{whiteSpace: 'pre-wrap'}}>{message.message}</Typography>
                     </Box>
                     <Typography component="p" variant="caption" sx={{ textAlign: 'left', mr: 8, mt: 1 }}>
                         {parseInt(date.getHours()) < 10 ? '0' + date.getHours() : date.getHours()}:
@@ -62,9 +63,9 @@ export default function ChatArea(props) {
         return (
             <Box key={message._id} sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', ml: 8 }}>
-                    <Box bgcolor="primary.main" color="#ffffff" sx={{ borderRadius: 2, p: 1 }}>
-                        <Chip sx={{ color: "#fff", my: 1 }} icon={icon} label={message.senderName} />
-                        <Typography sx={{whiteSpace: 'pre'}}>{message.message}</Typography>
+                    <Box bgcolor={green[200]} color="rgba(0, 0, 0, 0.87)" sx={{ borderRadius: 2, p: 1 }}>
+                        <Chip sx={{ color: "rgba(0, 0, 0, 0.87)", my: 1 }} icon={icon} label={message.senderName} />
+                        <Typography sx={{whiteSpace: 'pre-wrap'}}>{message.message}</Typography>
                     </Box>
                     <Typography component="p" variant="caption" sx={{ textAlign: 'right', ml: 8, mt: 1 }}>
                         {parseInt(date.getHours()) < 10 ? '0' + date.getHours() : date.getHours()}:
@@ -122,7 +123,7 @@ export default function ChatArea(props) {
                     id="standard-textarea"
                     placeholder="Digite aqui sua mensagem..."
                     multiline
-                    maxRows={2}
+                    maxRows={4}
                     fullWidth
                     disabled={props.currentChat.chatId ? false : true}
                 />
@@ -137,20 +138,19 @@ export default function ChatArea(props) {
                     <SendIcon />
                 </Button>
             </Box>
-            {props.perfil.atendente &&
-                <AccordionArea
+            {props.perfil.atendente && props.currentChat.chatId &&
+                <Box sx={{my: 4}}>
+                <AccordionMensagensProntas
                     title="Mensagens prontas"
                     icon={<NotesIcon sx={{ mr: 1 }} />}
                     insideMessage="Clique em uma mensagem para colar no campo de texto"
                     style={{
                         bgcolor: blueGrey[900],
-                        color: "#ffffff",
-                        mt: 4
+                        color: "#ffffff"
                     }}
-                    listRows={[]}
-                    handlerEvent=""
-
+                    listRows={json}
                 />
+                </Box>
             }
         </>
     )
