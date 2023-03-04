@@ -1,5 +1,4 @@
-import { Badge, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Typography } from "@mui/material";
-import { useState } from "react";
+import { Badge, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
 
 export default function ListArea(props) {
 
@@ -28,6 +27,8 @@ export default function ListArea(props) {
         return show(props.keyPrefix, row.socketJwt.chatId, props.listRooms, props.atendenteId);
     }) : [];
 
+    const newMessages = localStorage.getItem('CHAT_NEW_MESSAGES') !== null ? JSON.parse(localStorage.getItem('CHAT_NEW_MESSAGES')) : {};
+
     return (
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
 
@@ -39,7 +40,19 @@ export default function ListArea(props) {
                 {list.map((row) => {
                     if (show(props.keyPrefix, row.socketJwt.chatId, props.listRooms, props.atendenteId)) {
                         return (
-                            <ListItem disablePadding key={props.keyPrefix + row.socketJwt.chatId} data-id={row.socketJwt.chatId} onClick={props.handlerEvent}>
+                            <ListItem
+                                disablePadding
+                                key={props.keyPrefix + row.socketJwt.chatId}
+                                data-id={row.socketJwt.chatId}
+                                onClick={props.handlerEvent}
+                                secondaryAction={<Badge
+                                    badgeContent={
+                                        newMessages.hasOwnProperty(row.socketJwt.chatId) ? newMessages[row.socketJwt.chatId] : 0
+                                    }
+                                    color="primary"
+                                    sx={{ ml: 3 }}
+                                />}
+                            >
                                 <ListItemButton>
                                     <ListItemIcon>
                                         {props.listIcon}

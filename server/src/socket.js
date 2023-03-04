@@ -1,8 +1,6 @@
 const { validateJWT } = require('./helpers/jwt.js');
 const ConversaModel = require('./models/ConversaModel.js');
-
-// Reescrever salas ao rodar servidor
-var rooms = new Map();
+const SalasModel = require('./models/SalasModel.js');
 
 const reloadConnections = async (io) => {
 
@@ -39,15 +37,10 @@ const sendMessageToAtendentes = (io, atendentesSocket, event, message) => {
     }
 }
 
-const sendMessageTo = (io, typeUser, socketReceiver, event, message) => {
-    console.log(`Socket = ${typeUser} enviando para ${socketReceiver}`);
-    io.to(socketReceiver).emit(event, message);
-};
-
-const findSocketsByChatId = async (chatId, connections, sender) => {
+const findSocketsByChatId = async (chatId, connections, sender, rooms) => {
 
     const data = {};
-    const userIdAtendente = rooms.get(chatId);
+    const userIdAtendente = rooms.rooms.get(chatId);
 
     const clientSocket = await connections.clients.filter((user) => {
         return user.socketJwt.chatId == chatId;
@@ -64,11 +57,12 @@ const findSocketsByChatId = async (chatId, connections, sender) => {
     return data;
 }
 
-const joinChat = async (io, chatId, atendenteId) => {
+const joinChat = async (io, chatId, atendenteId, rooms) => {
     console.log(`Vincular o chat ${chatId} ao atendente ${atendenteId}`);
-    rooms.set(chatId, atendenteId);
+    rooms.rooms.set(chatId, atendenteId);
+    rooms.save();
     const connections = await reloadConnections(io);
-    sendMessageToAtendentes(io, connections.atendentes, 'chat:list', Object.fromEntries(rooms));
+    sendMessageToAtendentes(io, connections.atendentes, 'chat:list', Object.fromEntries(rooms.rooms));
 };
 
 const getChat = async (chatId) => {
@@ -76,13 +70,20 @@ const getChat = async (chatId) => {
     return chat;
 }
 
-const socketHandler = (io) => {
+const socketHandler = async (io) => {
+
+    console.log('============================================');
+    console.log('Carregando salas...');
+    const rooms = await SalasModel.findOne();
+    if(!rooms){
+        return SalasModel.create({});
+    }
+
     io.on('connection', async function (socket) {
 
         const userData = socket.handshake.query;
         const senderJwtData = await validateJWT(userData.token);
-
-        console.log('============================================');
+        
         console.log('Usuário conectado: ' + (senderJwtData.atendente ? 'atendente' : 'usuario'));
 
         socket.on('perfil:busca', async function () {
@@ -102,7 +103,7 @@ const socketHandler = (io) => {
                 clientes: connections.clients,
                 atendentes: connections.atendentes
             });
-            sendMessageToAtendentes(io, connections.atendentes, 'chat:list', Object.fromEntries(rooms));
+            sendMessageToAtendentes(io, connections.atendentes, 'chat:list', Object.fromEntries(rooms.rooms));
 
             if (perfil.atendente === false) {
                 console.log('Socket = Mandar chat ao cliente ao conectar')
@@ -114,13 +115,13 @@ const socketHandler = (io) => {
 
         socket.on('chat:join', function (chatId) {
             console.log('Socket = Vinculando atendente ao cliente');
-            joinChat(io, chatId, senderJwtData.id);
+            joinChat(io, chatId, senderJwtData.id, rooms);
         });
 
         socket.on('chat:enter', async function (chatId) {
             console.log('Socket = Atendente entrou no chat ' + chatId);
             const connections = await reloadConnections(io);
-            const sockets = await findSocketsByChatId(chatId, connections, senderJwtData);
+            const sockets = await findSocketsByChatId(chatId, connections, senderJwtData, rooms);
 
             // Devolver histórico da conversa
             const chat = await ConversaModel.findOne({ _id: chatId });
@@ -139,14 +140,14 @@ const socketHandler = (io) => {
             await chat.save();
 
             io.to(socket.id).emit('chat:in', chat);
-            io.to(sockets.receiver).emit('chat:in', chat);
+            // io.to(sockets.receiver).emit('chat:in', chat);
         });
 
         socket.on('chat:message:send', async function (data) {
             console.log('Socket = message: ', data);
 
             const connections = await reloadConnections(io);
-            const sockets = await findSocketsByChatId(data.chatId, connections, senderJwtData);
+            const sockets = await findSocketsByChatId(data.chatId, connections, senderJwtData, rooms);
 
             const chat = await getChat(data.chatId);
 

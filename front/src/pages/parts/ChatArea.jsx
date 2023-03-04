@@ -6,19 +6,45 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import PersonIcon from '@mui/icons-material/Person';
 
 import AccordionArea from "./AccordionArea";
+import { useEffect } from "react";
+
+const defineIcon = (message, props) => {
+    var icon = <PersonIcon color="#fff" />;
+    if (props.perfil.atendente === true) {
+        if (message.sendedBy == props.perfil.userId) {
+            icon = <SupportAgentIcon color="#fff" />;
+        } else {
+            icon = <PersonIcon color="#fff" />;
+        }
+    } else {
+        if (message.sendedBy == props.perfil.userId) {
+            icon = <PersonIcon color="#fff" />;
+        } else {
+            icon = <SupportAgentIcon color="#fff" />;
+        }
+    }
+    return icon;
+}
 
 export default function ChatArea(props) {
+
+    useEffect(() => {
+        const divMessages = document.querySelector('#area_messages');
+        divMessages.scrollTop = divMessages.scrollHeight;
+        document.querySelector('textarea').focus();
+    }, [props])
 
     const receivedMessage = (message) => {
 
         const date = new Date(message.sendedAt);
+        const icon = defineIcon(message, props);
 
         return (
             <Box key={message._id} sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mr: 8 }}>
                     <Box bgcolor="secondary.main" color="#ffffff" sx={{ borderRadius: 2, p: 1 }}>
-                        <Chip sx={{ color: "#fff", my: 1 }} icon={<SupportAgentIcon color="#fff" />} label={message.senderName} />
-                        <Typography>{message.message}</Typography>
+                        <Chip sx={{ color: "#fff", my: 1 }} icon={icon} label={message.senderName} />
+                        <Typography sx={{whiteSpace: 'pre'}}>{message.message}</Typography>
                     </Box>
                     <Typography component="p" variant="caption" sx={{ textAlign: 'left', mr: 8, mt: 1 }}>
                         {parseInt(date.getHours()) < 10 ? '0' + date.getHours() : date.getHours()}:
@@ -31,13 +57,14 @@ export default function ChatArea(props) {
     const sendedMessage = (message) => {
 
         const date = new Date(message.sendedAt);
+        const icon = defineIcon(message, props);
 
         return (
             <Box key={message._id} sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', ml: 8 }}>
                     <Box bgcolor="primary.main" color="#ffffff" sx={{ borderRadius: 2, p: 1 }}>
-                        <Chip sx={{ color: "#fff", my: 1 }} icon={<SupportAgentIcon color="#fff" />} label={message.senderName} />
-                        <Typography>{message.message}</Typography>
+                        <Chip sx={{ color: "#fff", my: 1 }} icon={icon} label={message.senderName} />
+                        <Typography sx={{whiteSpace: 'pre'}}>{message.message}</Typography>
                     </Box>
                     <Typography component="p" variant="caption" sx={{ textAlign: 'right', ml: 8, mt: 1 }}>
                         {parseInt(date.getHours()) < 10 ? '0' + date.getHours() : date.getHours()}:
@@ -55,7 +82,7 @@ export default function ChatArea(props) {
                 </Box>
             }
 
-            <Paper sx={{ py: 2, mb: 2, height: '60vh', overflow: "hidden", overflowY: "scroll" }}>
+            <Paper id="area_messages" sx={{ py: 2, mb: 2, height: '55vh', overflow: "hidden", overflowY: "scroll", scrollBehavior: 'smooth' }}>
                 {props.currentChat.messages.length < 1 &&
                     <Box
                         sx={{

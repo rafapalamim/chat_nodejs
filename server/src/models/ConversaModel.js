@@ -38,6 +38,6 @@ const chatSchema = new mongoose.Schema({
     sendEmailToUser: Boolean
 });
 
-const ConversaModel = mongoose.model("conversa", chatSchema);
+const ConversaModel = mongoose.model("conversas", chatSchema);
 
 module.exports = ConversaModel;

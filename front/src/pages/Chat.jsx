@@ -62,6 +62,14 @@ export default function Chat() {
     const handleChangeChat = (e) => {
         const chatId = e.currentTarget.getAttribute('data-id')
         console.log('ChangeRoom: ', chatId);
+
+        var newMessages = localStorage.getItem('CHAT_NEW_MESSAGES') !== null ? JSON.parse(localStorage.getItem('CHAT_NEW_MESSAGES')) : {};
+
+        if (newMessages.hasOwnProperty(chatId)) {
+            delete newMessages[chatId];
+            localStorage.setItem('CHAT_NEW_MESSAGES', JSON.stringify(newMessages));
+        }
+
         socket.emit('chat:enter', chatId);
     };
 
@@ -78,6 +86,12 @@ export default function Chat() {
         e.preventDefault();
         const input = document.querySelector('textarea');
         const message = input.value;
+
+        if(!message){
+            input.focus();
+            return;
+        }
+        
         console.log('SendMessage: ', message);
 
         const messageData = {
@@ -87,6 +101,7 @@ export default function Chat() {
 
         socket.emit('chat:message:send', messageData);
         input.value = '';
+        input.focus();
     }
 
     if (perfil.atendente === null) {
@@ -121,13 +136,25 @@ export default function Chat() {
         });
 
         socket.off('chat:message:receive').on('chat:message:receive', (message) => {
-            setCurrentChat({
-                userName: message.user.name,
-                identifiedBy: message.user.identifiedBy,
-                chatId: message._id,
-                messages: message.messages,
-                startAt: message.startAt
-            });
+            if (message._id == currentChat.chatId) {
+                setCurrentChat({
+                    userName: message.user.name,
+                    identifiedBy: message.user.identifiedBy,
+                    chatId: message._id,
+                    messages: message.messages,
+                    startAt: message.startAt
+                });
+            } else {
+                if (localStorage.getItem('CHAT_NEW_MESSAGES') !== null) {
+                    var newMessages = JSON.parse(localStorage.getItem('CHAT_NEW_MESSAGES'))
+                } else {
+                    var newMessages = {};
+                }
+
+                newMessages[message._id] = newMessages.hasOwnProperty(message._id) ? newMessages[message._id] + 1 : 1;
+                localStorage.setItem('CHAT_NEW_MESSAGES', JSON.stringify(newMessages));
+                setListaAtendimentos(new Map([...listAtendimentos]));
+            }
         });
     }
 
@@ -138,12 +165,8 @@ export default function Chat() {
                     {perfil.atendente === null ?
                         <Grid item xs={3}></Grid>
                         :
-                        !perfil.atendente ?
-                            <Grid item xs={3}>
-                                <Typography>Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, modi asperiores dignissimos voluptatem fugit optio! Dolorum maiores praesentium ullam libero modi rem asperiores sed optio ad laudantium tempore, doloribus ex.</Typography>
-                            </Grid>
-                            :
-                            <Grid item xs={3}>
+                        <>
+                            <Grid display={perfil.atendente === true ? 'block' : 'none'} item xs={3}>
                                 <AccordionArea
                                     title="Atendentes on-line"
                                     icon={<SupportAgentIcon sx={{ mr: 1 }} />}
@@ -180,8 +203,9 @@ export default function Chat() {
                                     atendenteId={perfil.userId}
                                 />
                             </Grid>
+                        </>
                     }
-                    <Grid item xs={9}>
+                    <Grid item xs={perfil.atendente === true ? 9 : 12}>
                         <ChatArea currentChat={currentChat} perfil={perfil} handlerSendMessage={handleSendMessage} />
                     </Grid>
                 </Grid>
