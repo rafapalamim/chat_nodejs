@@ -78,7 +78,7 @@ export default function ChatArea(props) {
         <>
             {props.perfil.atendente && props.currentChat.chatId &&
                 <Box sx={{ mb: 2 }}>
-                    <Typography variant="button" component="p">Você está conversando com <b>{props.currentChat.userName}</b> {props.currentChat.identifiedBy ? ' (Identificado por ' + props.currentChat.identifiedBy + ')' : ''}</Typography>
+                    <Chip label={<Typography variant="button" component="p">Você está conversando com <b>{props.currentChat.userName}</b> {props.currentChat.identifiedBy ? ' (Identificado por ' + props.currentChat.identifiedBy + ')' : ''}</Typography>} variant="outlined" sx={{py: 2}} />                    
                 </Box>
             }
 
