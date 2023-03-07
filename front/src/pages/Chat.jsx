@@ -116,51 +116,49 @@ export default function Chat() {
         });
     }
 
-    if (perfil.atendente !== null) {
-        console.log('Liberando escutas do socket...');
+    console.log('Liberando escutas do socket...');
 
-        socket.on('lista:usuarios', (msg) => {
-            console.log('Recebendo lista de usuários e atendentes...');
-            setUsuarios(msg);
+    socket.on('lista:usuarios', (msg) => {
+        console.log('Recebendo lista de usuários e atendentes...');
+        setUsuarios(msg);
+    });
+
+    socket.on('chat:list', (list) => {
+        console.log('Recebendo lista de atendimentos atuais...');
+        setListaAtendimentos(new Map(Object.entries(list)));
+    });
+
+    socket.on('chat:in', (data) => {
+        setCurrentChat({
+            userName: data.user.name,
+            identifiedBy: data.user.identifiedBy,
+            chatId: data._id,
+            messages: data.messages,
+            startAt: data.startAt
         });
+    });
 
-        socket.on('chat:list', (list) => {
-            console.log('Recebendo lista de atendimentos atuais...');
-            setListaAtendimentos(new Map(Object.entries(list)));
-        });
-
-        socket.on('chat:in', (data) => {
+    socket.off('chat:message:receive').on('chat:message:receive', (message) => {
+        if (message._id == currentChat.chatId) {
             setCurrentChat({
-                userName: data.user.name,
-                identifiedBy: data.user.identifiedBy,
-                chatId: data._id,
-                messages: data.messages,
-                startAt: data.startAt
+                userName: message.user.name,
+                identifiedBy: message.user.identifiedBy,
+                chatId: message._id,
+                messages: message.messages,
+                startAt: message.startAt
             });
-        });
-
-        socket.off('chat:message:receive').on('chat:message:receive', (message) => {
-            if (message._id == currentChat.chatId) {
-                setCurrentChat({
-                    userName: message.user.name,
-                    identifiedBy: message.user.identifiedBy,
-                    chatId: message._id,
-                    messages: message.messages,
-                    startAt: message.startAt
-                });
+        } else {
+            if (localStorage.getItem('CHAT_NEW_MESSAGES') !== null) {
+                var newMessages = JSON.parse(localStorage.getItem('CHAT_NEW_MESSAGES'))
             } else {
-                if (localStorage.getItem('CHAT_NEW_MESSAGES') !== null) {
-                    var newMessages = JSON.parse(localStorage.getItem('CHAT_NEW_MESSAGES'))
-                } else {
-                    var newMessages = {};
-                }
-
-                newMessages[message._id] = newMessages.hasOwnProperty(message._id) ? newMessages[message._id] + 1 : 1;
-                localStorage.setItem('CHAT_NEW_MESSAGES', JSON.stringify(newMessages));
-                setListaAtendimentos(new Map([...listAtendimentos]));
+                var newMessages = {};
             }
-        });
-    }
+
+            newMessages[message._id] = newMessages.hasOwnProperty(message._id) ? newMessages[message._id] + 1 : 1;
+            localStorage.setItem('CHAT_NEW_MESSAGES', JSON.stringify(newMessages));
+            setListaAtendimentos(new Map([...listAtendimentos]));
+        }
+    });
 
     return (
         <Container sx={{ mt: 3 }}>

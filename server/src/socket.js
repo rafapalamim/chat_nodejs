@@ -99,10 +99,12 @@ const socketHandler = async (io) => {
 
             console.log('Socket = Mandando lista de atendentes e usuários, além das salas, para os atendentes ao conectar no socket');
             const connections = await reloadConnections(io);
+
             sendMessageToAtendentes(io, connections.atendentes, 'lista:usuarios', {
                 clientes: connections.clients,
                 atendentes: connections.atendentes
             });
+
             sendMessageToAtendentes(io, connections.atendentes, 'chat:list', Object.fromEntries(rooms.rooms));
 
             if (perfil.atendente === false) {
@@ -140,7 +142,7 @@ const socketHandler = async (io) => {
             await chat.save();
 
             io.to(socket.id).emit('chat:in', chat);
-            // io.to(sockets.receiver).emit('chat:in', chat);
+            io.to(sockets.receiver).emit('chat:message:receive', chat);
         });
 
         socket.on('chat:message:send', async function (data) {
